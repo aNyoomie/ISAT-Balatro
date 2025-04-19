@@ -2,6 +2,8 @@ In Stars and Time-Themed Balatro Content Mod!
 
 Latest Steammodded version is recommended!
 
+
+![promo](https://github.com/user-attachments/assets/1b9bfd9e-4e27-41f2-aa87-901557c1afe3)
 ----
 
 In Stars and Time created by Insertdisc5
