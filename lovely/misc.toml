@@ -1,0 +1,45 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# adds snack as a color
+[[patches]]
+[patches.pattern]
+target = 'functions/misc_functions.lua'
+pattern = '''
+white = G.C.WHITE,
+'''
+position = "before"
+payload = '''
+snack = HEX('848484'),
+perishable = G.C.PERISHABLE,
+eternal = G.C.ETERNAL,
+'''
+match_indent = true
+
+# last snack
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+pattern = '''
+last_tarot_planet = nil,
+'''
+position = "after"
+payload = '''
+last_snack = nil,
+'''
+match_indent = true
+
+# lets you buy change god when full slots
+[[patches]]
+[patches.pattern]
+target = 'functions/button_callbacks.lua'
+pattern = '''
+not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) and
+'''
+position = "at"
+payload = '''
+not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + ((card.edition and card.edition.negative) and 1 or (card.config.center.key == 'j_isat_god') and 2 or 0)) and
+'''
+match_indent = true

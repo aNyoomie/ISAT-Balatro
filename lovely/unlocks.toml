@@ -1,0 +1,125 @@
+[manifest]
+version = "1.0.0"
+priority = -2
+
+#change god
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if args.type == 'win_custom' then"
+position = "after"
+payload = '''
+    if card.key == 'j_isat_god' then 
+        local siff = nil
+        local mira = nil
+        for i = 1, #G.jokers.cards do
+            if G.jokers.cards[i].config.center.key == 'j_isat_siffrin' then
+               siff = true 
+            elseif G.jokers.cards[i].config.center.key == 'j_isat_mira' then
+               mira = true 
+            end
+        end
+        if siff and mira then
+            ret = true
+            unlock_card(G.P_CENTERS["j_isat_god"])
+        end
+    end
+'''
+match_indent = true
+
+#snack unloocked
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = '''
+{n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+    {n=G.UIT.O, config={object = DynaText({string = {card_center.set == 'Voucher' and localize('k_voucher') or localize('k_joker')}, colours = {G.C.BLUE},shadow = true, rotate = true, bump = true, pop_in = 0.3, pop_in_rate = 2, scale = 1.2})}}
+}},
+'''
+position = "at"
+payload = '''
+{n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+    {n=G.UIT.O, config={object = DynaText({string = {card_center.set == 'Voucher' and localize('k_voucher') or card_center.set == 'snack' and "Snack" or localize('k_joker')}, colours = {G.C.BLUE},shadow = true, rotate = true, bump = true, pop_in = 0.3, pop_in_rate = 2, scale = 1.2})}}
+}},
+'''
+match_indent = true
+
+# euphraise
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if card.name == 'Blueprint' then"
+position = "at"
+payload = '''
+    if card.name == 'Blueprint' or card.key == 'j_isat_housemaiden' then
+'''
+match_indent = true
+
+# king check
+[[patches]]
+[patches.pattern]
+target = "blind.lua"
+pattern = '''
+G.ARGS.spin.real = (G.SETTINGS.reduced_motion and 0 or 1)*(self.config.blind.boss and (self.config.blind.boss.showdown and 0.5 or 0.25) or 0)
+'''
+position = "before"
+payload = '''
+check_for_unlock({type = 'set_blind'})
+'''
+match_indent = true
+
+#king unlock
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if args.type == 'win_custom' then"
+position = "before"
+payload = '''
+if args.type == 'set_blind' then
+    if card.key == 'j_isat_king' and 
+        G.GAME.blind:get_type() == 'Boss' and G.GAME.round_resets.ante == G.GAME.win_ante then
+        ret = true
+        unlock_card(card)
+    end
+end
+'''
+match_indent = true
+
+#leftovers
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = '''
+elseif _c.name == 'Illusion' then loc_vars = {_c.unlock_condition.extra, G.PROFILES[G.SETTINGS.profile].career_stats.c_playing_cards_bought}
+'''
+position = "after"
+payload = '''
+elseif _c.key == "v_isat_snack2" then loc_vars = {_c.unlock_condition.extra, G.PROFILES[G.SETTINGS.profile].career_stats.c_snack_cards_bought}
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''
+c_planets_bought = 0,
+c_playing_cards_bought = 0,
+'''
+position = "after"
+payload = '''
+c_snack_cards_bought = 0,
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = '''
+elseif c1.config.center.set == 'Tarot' then
+'''
+position = "before"
+payload = '''
+elseif c1.config.center.set == 'snack' then
+    inc_career_stat('c_snack_cards_bought', 1)
+'''
+match_indent = true

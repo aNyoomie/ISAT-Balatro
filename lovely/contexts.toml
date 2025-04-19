@@ -1,0 +1,47 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# isat_cash_out calculate
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.deck:shuffle('cashout'..G.GAME.round_resets.ante)"
+position = "after"
+payload = '''
+for i = 1, #G.jokers.cards do
+	G.jokers.cards[i]:calculate_joker({isat_cash_out = true})
+end
+if G.GAME.Palmiers then
+	G.hand:change_size(-G.GAME.Palmiers)
+	G.GAME.Palmiers = nil
+end
+'''
+match_indent = true
+
+# isat_voucher calculate
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "G.GAME.used_vouchers[self.config.center_key] = true"
+position = "after"
+payload = '''
+for i = 1, #G.jokers.cards do
+	G.jokers.cards[i]:calculate_joker({isat_voucher = true})
+end
+'''
+match_indent = true
+
+# isat_press_play calculate
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "check_for_unlock({type = 'run_card_replays'})"
+position = "after"
+payload = '''
+	for j = 1, #G.jokers.cards do
+		G.jokers.cards[j]:calculate_joker({isat_press_play = true})
+	end
+'''
+match_indent = true
