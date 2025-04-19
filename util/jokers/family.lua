@@ -195,6 +195,21 @@ SMODS.Joker{
         }
       end
     end
+    -- snack unlock
+    if context.end_of_round and G.GAME.blind:get_type() == 'Boss' and G.GAME.round_resets.ante == G.GAME.win_ante then
+      local siff = nil
+      local bonnie = nil
+      for i = 1, #G.jokers.cards do
+        if G.jokers.cards[i].config.center.key == 'j_isat_siffrin' then
+            siff = true
+        elseif G.jokers.cards[i].config.center.key == 'j_isat_bonnie' then
+            bonnie = true
+        end
+      end
+      if siff and bonnie then
+        unlock_card(G.P_CENTERS["c_isat_eternal"])
+      end
+    end
   end,
   -- incase the win ante isnt 8 for some reason
   add_to_deck = function(self, card, from_debuff)
@@ -392,20 +407,6 @@ SMODS.Joker{
           end
         return true
       end)}))
-    -- unlocking snack
-    elseif context.end_of_round and G.GAME.blind:get_type() == 'Boss' and G.GAME.round_resets.ante == G.GAME.win_ante then
-      local siff = nil
-      local bonnie = nil
-      for i = 1, #G.jokers.cards do
-          if G.jokers.cards[i].config.center.key == 'j_isat_siffrin' then
-              siff = true
-          elseif G.jokers.cards[i].config.center.key == 'j_isat_bonnie' then
-              bonnie = true
-          end
-      end
-      if siff and bonnie then
-          unlock_card(G.P_CENTERS["c_isat_eternal"])
-      end
     elseif context.ending_shop then
       card.ability.extra.rice = nil
     end

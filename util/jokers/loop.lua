@@ -455,9 +455,16 @@ SMODS.Blind{
       return card.debuff
   end,
   disable = function(self)
-      for _, card in pairs(G.playing_cards) do
-          if card.debuff then card:set_debuff() end
+    for _, card in pairs(G.playing_cards) do
+        if card.debuff then card:set_debuff() end
+    end
+    G.E_MANAGER:add_event(Event({
+      func = function()
+        G.GAME.blind.chips = get_blind_amount(G.GAME.round_resets.ante)*G.GAME.starting_params.ante_scaling
+        G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
+        return true
       end
+    })) 
   end,
   defeat = function(self)
     for _, card in pairs(G.playing_cards) do
