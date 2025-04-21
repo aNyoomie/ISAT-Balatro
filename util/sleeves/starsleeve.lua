@@ -39,7 +39,7 @@ CardSleeves.Sleeve {
         else
             G.GAME.used_vouchers.v_isat_snack = true
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.8, func = function()
-            G.GAME.starting_params.ante_scaling = self.config.ante_scaling
+            G.GAME.starting_params.ante_scaling = G.GAME.starting_params.ante_scaling*self.config.ante_scaling
             play_sound('isat_coin',1,0.3)
             local card = nil
             card = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_isat_siffrin', 'star')

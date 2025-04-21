@@ -167,8 +167,8 @@ SMODS.Consumable{
     loc_txt = {
         name = 'Onigiri',
         text = {
-        'Gives +1 {C:red}Discard{} for',
-        'every #1# {C:attention}Jokers',
+        'Gives +1 {C:red}Discard{} this round',
+        'for every #1# {C:attention}Jokers',
         '{C:inactive}(Currently {}+#2#{C:inactive})',
         '{C:inactive}I. Love. Rice.'
         }
@@ -252,29 +252,14 @@ SMODS.Consumable{
     end,
     can_use = function(self, card)
         for i = 1, #G.jokers.cards do
-            if G.jokers and not G.jokers.cards[i].edition and not G.jokers.cards[i].ability.eternal and not G.jokers.cards[i].ability.perishable then 
+            if G.jokers and not G.jokers.cards[i].edition and not G.jokers.cards[i].ability.eternal 
+            and G.jokers.cards[i].config.center.eternal_compat and not G.jokers.cards[i].ability.perishable then 
                 return true 
             end
         end
         return false
     end,
     use = function(self, card, area, copier)
-        local j_list = {}
-        for k,v in pairs(G.jokers.cards) do
-            j_list[k] = v
-        end
-        pseudoshuffle(j_list)
-        for i = 1, #j_list do
-            if not j_list[i].ability.eternal and not j_list[i].ability.perishable and not j_list[i].edition then
-                for j = 1, #G.jokers.cards do
-                    if G.jokers.cards[j] == j_list[i] then
-                        G.jokers.cards[j]:set_edition({polychrome = true})
-                        G.jokers.cards[j]:set_eternal({true})
-                        return
-                    end
-                end
-            end
-        end
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             func = function()
@@ -288,6 +273,22 @@ SMODS.Consumable{
                 return true
             end
         }))
+        local j_list = {}
+        for k,v in pairs(G.jokers.cards) do
+            j_list[k] = v
+        end
+        pseudoshuffle(j_list)
+        for i = 1, #j_list do
+            if not j_list[i].ability.eternal and j_list[i].config.center.eternal_compat and not j_list[i].ability.perishable and not j_list[i].edition then
+                for j = 1, #G.jokers.cards do
+                    if G.jokers.cards[j] == j_list[i] then
+                        G.jokers.cards[j]:set_edition({polychrome = true})
+                        G.jokers.cards[j]:set_eternal({true})
+                        return
+                    end
+                end
+            end
+        end
     end,
 }
 
@@ -320,7 +321,7 @@ SMODS.Consumable{
         card.T.h = card.T.h*(78/95)*scale
     end,
     can_use = function(self, card)
-		return #G.jokers.highlighted == 1 and (not G.jokers.highlighted[1].edition or not G.jokers.highlighted[1].edition.negative)
+		return #G.jokers.highlighted == 1 and (not G.jokers.highlighted[1].edition or not G.jokers.highlighted[1].edition.negative) and not G.jokers.highlighted[1].ability.eternal
     end,
     use = function(self, card, area, copier)
         G.E_MANAGER:add_event(Event({
@@ -444,6 +445,22 @@ SMODS.Consumable{
     end,
 }
 
+create_samosa_joker = function(pseed)
+    local samosa_keys = {}
+    for k, v in pairs(G.P_CENTERS) do
+      if v.perishable_compat and v.unlocked and not (v.rarity == 4) and not(not next(find_joker("Showman")) and G.GAME.used_jokers[v.key]) then
+        table.insert(samosa_keys, v.key)
+      end
+    end
+    local samosa_key = "j_joker"
+    local create_args = {set = "Joker", area = G.jokers, key = ''}
+    
+    if #samosa_keys > 0 then
+      samosa_key = pseudorandom_element(samosa_keys, pseudoseed(G.GAME.pseudorandom.seed))
+    end
+    return samosa_key
+end
+  
 -- Samosas
 SMODS.Consumable{
     key = "samosas",
@@ -479,7 +496,8 @@ SMODS.Consumable{
         G.E_MANAGER:add_event(Event({
             func = function() 
                 for i = 1, jokers_to_create do
-                    local _card = create_card('Joker', G.jokers, nil, nil, nil, nil, nil, 'rif')
+                    local _card = create_card('Joker', G.jokers, nil, 0, nil, nil,
+                    create_samosa_joker(), nil)
                     _card:set_perishable(true)
                     _card:add_to_deck()
                     G.jokers:emplace(_card)
@@ -610,6 +628,10 @@ SMODS.Consumable{
             G.jokers.highlighted[1].ability.xmult1 = G.jokers.highlighted[1].ability.xmult1+0.1
             G.jokers.highlighted[1].ability.xmult2 = G.jokers.highlighted[1].ability.xmult2+0.1
             G.jokers.highlighted[1]:juice_up()
+            if G.jokers.highlighted[1].ability.extra.phase > 0 then
+                card_eval_status_text(G.jokers.highlighted[1], 'extra', nil, nil, nil, {colour = G.C.RED, message = localize{ type = 'variable', key = 'a_xmult', 
+                vars = { (G.jokers.highlighted[1].ability.extra.phase == 2 and G.jokers.highlighted[1].ability.xmult2) or G.jokers.highlighted[1].ability.xmult1 } } })  
+            end
         end
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
             play_sound('timpani')
@@ -685,7 +707,8 @@ SMODS.Consumable{
         card.T.h = card.T.h*(78/95)*scale
     end,
     can_use = function(self, card)
-		if G.GAME.last_snack and G.P_CENTERS[G.GAME.last_snack].name ~= "c_isat_eternal" then
+        if (#G.consumeables.cards < G.consumeables.config.card_limit or card.area == G.consumeables)
+		and G.GAME.last_snack and G.P_CENTERS[G.GAME.last_snack].name ~= "c_isat_eternal" then
             return true
         end
     end,

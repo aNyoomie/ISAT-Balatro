@@ -230,7 +230,7 @@ SMODS.Joker{
     },
   },
   rarity = 2,
-  cost = 6,
+  cost = 5,
   unlocked = true,
   discovered = true,
   blueprint_compat = false,
@@ -323,7 +323,7 @@ SMODS.Joker{
     },
   },
   rarity = 2,
-  cost = 6,
+  cost = 5,
   unlocked = true,
   discovered = true,
   blueprint_compat = true,
@@ -364,7 +364,7 @@ SMODS.Joker{
     },
   },
   rarity = 1,
-  cost = 6,
+  cost = 5,
   unlocked = true,
   discovered = true,
   blueprint_compat = true,
@@ -381,14 +381,14 @@ SMODS.Joker{
   end,
   calculate = function(self,card,context)
     if context.isat_cash_out and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-      G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+      local rice_bonus = 0
+      if card.ability.extra.rice then 
+        rice_bonus = 1 
+        card.ability.extra.rice = nil
+      end
+      G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1+rice_bonus
       G.E_MANAGER:add_event(Event({
         func = (function()
-          local rice_bonus = 0
-          if card.ability.extra.rice then 
-            rice_bonus = 1 
-            card.ability.extra.rice = nil
-          end
           for i = 1, 1+rice_bonus do
             local _card = create_card('snack',G.consumeables, nil, nil, nil, nil, nil, 'bon')
             G.E_MANAGER:add_event(Event({

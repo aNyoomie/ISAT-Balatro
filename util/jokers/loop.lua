@@ -15,7 +15,7 @@ SMODS.Joker{
     }
   },
   rarity = 3,
-  cost = 6,
+  cost = 7,
   unlocked = false,
   discovered = false,
   blueprint_compat = true,
@@ -35,13 +35,12 @@ SMODS.Joker{
         Xmult = card.ability.xmult,
       }
     elseif ((not context.repetition and not context.individual and context.end_of_round) or context.skip_blind) and not context.blueprint then
-      if G.GAME.blind and G.GAME.blind:get_type() == 'Big' then card.ability.extra.bigover = true
-      elseif G.GAME.blind and G.GAME.blind:get_type() == 'Boss' then card.ability.extra.bossover = true end
       card.ability.xmult = card.ability.xmult + card.ability.xmult_bonus
       card_eval_status_text(card, 'extra', nil, nil, nil, {colour = G.C.RED, message = localize{ type = 'variable', key = 'a_xmult', vars = { card.ability.xmult } } })
     end
-    if ((not card.ability.extra.bossover and context.skip_blind and G.GAME.round_resets.blind_states.Boss == 'Select') 
-    or (context.ending_shop and card.ability.extra.bigover)) and G.GAME.round_resets.ante == G.GAME.win_ante and not context.blueprint then
+    if ((context.skip_blind and G.GAME.round_resets.blind_states.Boss == 'Select') --skip check
+    or (context.ending_shop and G.GAME.round_resets.blind_states.Big == 'Defeated')) --shop check
+    and G.GAME.round_resets.ante == G.GAME.win_ante and not context.blueprint then
       for i = 1, #G.jokers.cards do
         if G.jokers.cards[i].config.center.key == 'j_isat_siffrin' then
           card.ability.extra.siffplace = i
@@ -116,10 +115,8 @@ SMODS.Joker{
             end
           end
         end
-    elseif card.ability.extra.bossover then
-      card.ability.extra.bossover = nil
     -- swaps loop for loop_boss
-    elseif context.setting_blind and not context.blueprint and card.ability.extra.siffplace then
+    elseif context.setting_blind and not context.blueprint and card.ability.extra.siffplace and G.GAME.blind:get_type() == 'Boss' then
       if card.edition then
         previous_edition = card.edition
       end
@@ -309,6 +306,7 @@ SMODS.Blind{
   no_collection = true,
   unlocked = true,
   discovered = true,
+  perishable_compat = false, 
   atlas = 'isat_blind',
   pos = {x = 0, y = 0},
   boss = {min = 1, max = 10, showdown = true},

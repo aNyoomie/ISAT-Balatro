@@ -13,7 +13,7 @@ SMODS.Joker{
     }
   },
   rarity = 2,
-  cost = 6,
+  cost = 5,
   unlocked = false,
 	unlock_condition = {type = 'win_custom'},
   discovered = false,
@@ -48,7 +48,7 @@ SMODS.Joker{
     }
   },
   rarity = 3,
-  cost = 7,
+  cost = 8,
   unlocked = false,
 	unlock_condition = {type = 'win_custom'},
   discovered = false,
@@ -156,7 +156,7 @@ SMODS.Joker{
       else
         return {
             x_mult = card.ability.extra[1],
-            card = context.other_card
+            card = card
         }
       end
     end
