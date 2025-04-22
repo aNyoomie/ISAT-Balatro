@@ -371,6 +371,25 @@ SMODS.Blind{
         loop_pos = i
       end
     end
+    -- a force spawn of loop because sometimes the boss shows up without loop?????? i dont fucking know how. but this might help.
+    if not loop_pos then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          local card = create_card('Joker', G.jokers, nil, 0, nil, nil,
+            'j_isat_loop_boss', nil)
+          card:set_eternal(true)
+          card:add_to_deck()
+          G.jokers:emplace(card)
+          G.GAME.joker_buffer = 0
+          play_sound('isat_shift',1,0.15)
+          if not extra or not extra.no_juice then
+            card:juice_up(0.6, 0.1)
+          end
+          return true
+        end
+      }))
+      loop_pos = #G.jokers.cards
+    end
     if #G.hand.cards < G.hand.config.card_limit then
       G.hand:change_size(G.hand.config.card_limit-#G.hand.cards)
       G.hand:change_size(-1*(G.hand.config.card_limit-#G.hand.cards))
@@ -393,7 +412,7 @@ SMODS.Blind{
       self.config.extra.triggered = true
     end
     -- red bg
-    if G.jokers.cards[loop_pos].ability.extra.phase == 2 then 
+    if G.jokers.cards[loop_pos].ability.extra and G.jokers.cards[loop_pos].ability.extra.phase == 2 then 
       ease_background_colour{new_colour = lighten(G.C.WHITE,0.4), special_colour = G.C.RED, tertiary_colour = darken(G.C.BLACK, 0.4), contrast = 5}
     end
     if G.GAME.chips > self.config.extra.blind_clears[self.config.extra.phase+1] then
