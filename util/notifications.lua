@@ -194,7 +194,7 @@ ISAT.notifications = {
 										n = G.UIT.T,
 										config = {
 											text = "This mod includes a customize deck option for",
-											scale = 0.35,
+											scale = 0.45,
 											colour = G.C.BLACK,
 										},
 									},
@@ -208,7 +208,7 @@ ISAT.notifications = {
 										n = G.UIT.T,
 										config = {
 											text = "Rock/Paper/Scissors and Star themed suits,",
-											scale = 0.35,
+											scale = 0.45,
 											colour = G.C.BLACK,
 										},
 									},
@@ -222,7 +222,7 @@ ISAT.notifications = {
 										n = G.UIT.T,
 										config = {
 											text = "as well as a 'ISAT EN' language option to",
-											scale = 0.35,
+											scale = 0.45,
 											colour = G.C.BLACK,
 										},
 									},
@@ -236,7 +236,7 @@ ISAT.notifications = {
 										n = G.UIT.T,
 										config = {
 											text = "rename them accordingly.",
-											scale = 0.35,
+											scale = 0.45,
 											colour = G.C.BLACK,
 										},
 									},
@@ -264,7 +264,7 @@ ISAT.notifications = {
 										n = G.UIT.T,
 										config = {
 											text = "These are turned on by default, but are ",
-											scale = 0.35,
+											scale = 0.45,
 											colour = G.C.BLACK,
 										},
 									},
@@ -278,7 +278,7 @@ ISAT.notifications = {
 										n = G.UIT.T,
 										config = {
 											text = "not required. Reselect your desired language",
-											scale = 0.35,
+											scale = 0.45,
 											colour = G.C.BLACK,
 										},
 									},
@@ -292,7 +292,7 @@ ISAT.notifications = {
 										n = G.UIT.T,
 										config = {
 											text = "to return to normalcy.",
-											scale = 0.35,
+											scale = 0.45,
 											colour = G.C.BLACK,
 										},
 									},
