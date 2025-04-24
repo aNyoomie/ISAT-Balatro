@@ -1,5 +1,4 @@
--- resets starting popup
--- G.SETTINGS.isat_notifs = {}
+if not G.SETTINGS.isat_notifs then G.SETTINGS.isat_notifs = {} end
 
 -- sets suit and language by default
 if not G.SETTINGS.isat_notifs["start"] then
