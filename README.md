@@ -14,7 +14,7 @@ Art assets primarily lifted from ISAT's assets
 
 Includes:
 
-10* Jokers
+25* Jokers
 
 10 Consumables
 
