@@ -18,6 +18,93 @@ eternal = G.C.ETERNAL,
 '''
 match_indent = true
 
+# MONO TITLE COLORS
+[[patches]]
+[patches.pattern]
+target = 'globals.lua'
+pattern = '''
+RED = HEX('FE5F55'),
+'''
+position = "after"
+payload = '''
+MONOBLUE = HEX('777777'),
+MONORED = HEX('B1B1B1'),
+'''
+match_indent = true
+
+# logo
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+pattern = '''
+G.SPLASH_LOGO = Sprite(0, 0, 
+        13*SC_scale, 
+        13*SC_scale*(G.ASSET_ATLAS["balatro"].py/G.ASSET_ATLAS["balatro"].px),
+        G.ASSET_ATLAS["balatro"], {x=0,y=0})
+'''
+position = 'at'
+payload = '''
+G.SPLASH_LOGO = Sprite(0, 0,
+		13*SC_scale,
+		13*SC_scale*(G.ASSET_ATLAS["isat_splash"].py/G.ASSET_ATLAS["isat_splash"].px),
+		G.ASSET_ATLAS["isat_splash"], {x=0,y=0})
+'''
+match_indent = true
+
+# tears undebuffing
+[[patches]]
+[patches.pattern]
+target = 'blind.lua'
+pattern = '''
+card:set_debuff(false)
+'''
+position = 'before'
+payload = '''
+if next(find_joker("j_isat_tears")) then
+    for i = 1, #G.jokers.cards do
+        if G.jokers.cards[i].config.center.key == 'j_isat_tears' then
+            for i,c in ipairs(G.jokers.cards[i].ability.extra.debuffed_cards) do
+                if card == c then
+                    card:set_debuff(true)
+                    return
+                end
+            end
+        end
+    end
+end
+'''
+match_indent = true
+
+# tourment
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''
+if flush_calc then
+'''
+position = 'after'
+payload = '''
+    if next(find_joker('j_isat_tourment')) and (self.ability.effect == 'Stone Card' or self.ability.effect == "Mult Card") and not self.debuff then
+        return true
+    end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''
+    else
+        if self.debuff and not bypass_debuff then return end
+'''
+position = 'after'
+payload = '''
+if next(find_joker('j_isat_tourment')) and (self.ability.effect == 'Stone Card' or self.ability.effect == "Mult Card") then
+    return true
+end
+'''
+match_indent = true
+
 # last snack
 [[patches]]
 [patches.pattern]
@@ -41,5 +128,73 @@ not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limi
 position = "at"
 payload = '''
 not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + ((card.edition and card.edition.negative) and 1 or (card.config.center.key == 'j_isat_god') and 2 or 0)) and
+'''
+match_indent = true
+
+#calamite
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''
+reset_idol_card()
+'''
+position = 'after'
+payload = '''
+reset_calamite_card()
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+pattern = '''
+reset_idol_card()
+reset_mail_rank()
+self.GAME.current_round.ancient_card.suit = nil
+reset_ancient_card()
+'''
+position = 'after'
+payload = '''
+self.GAME.current_round.calamite_card.suit = nil
+reset_calamite_card()
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+pattern = '''
+idol_card = {suit = 'Spades', rank = 'Ace'},
+mail_card = {rank = 'Ace'},
+ancient_card = {suit = 'Spades'},
+'''
+position = 'after'
+payload = '''
+calamite_card = {suit = 'Hearts'},
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''
+if valid_castle_cards[1] then 
+        local castle_card = pseudorandom_element(valid_castle_cards, pseudoseed('cas'..G.GAME.round_resets.ante))
+        G.GAME.current_round.castle_card.suit = castle_card.base.suit
+    end
+end
+'''
+position = 'after'
+payload = '''
+
+function reset_calamite_card()
+    local calamite_suits = {}
+    for k, v in ipairs({'Spades','Hearts','Clubs','Diamonds'}) do
+        if v ~= G.GAME.current_round.calamite_card.suit then calamite_suits[#calamite_suits + 1] = v end
+    end
+    local calamite_card = pseudorandom_element(calamite_suits, pseudoseed('tux'..G.GAME.round_resets.ante))
+    G.GAME.current_round.calamite_card.suit = calamite_card
+end
+
 '''
 match_indent = true

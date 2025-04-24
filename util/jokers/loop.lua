@@ -21,7 +21,6 @@ SMODS.Joker{
   blueprint_compat = true,
   perishable_compat = true, 
   eternal_compat = true,
-  order = 156,
   atlas = 'Jokers',
   pos = {x = 0, y = 1},
   config = {xmult = 1, xmult_bonus = 0.15, extra = {}},

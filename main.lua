@@ -2,24 +2,42 @@
 --- MOD_NAME: In Stars and Time
 --- MOD_ID: ISAT
 --- MOD_AUTHOR: [aNyoomie]
---- MOD_DESCRIPTION: ----- In Stars and Time themed Content Mod!! ----- In Stars and Time created by Insertdisc5, Music by Studio Thumpy Puppy, Art assets primarily lifted from ISAT's assets. Features spoiler content from ISAT, as late as ACT 6. You are warned. Play In Stars and Time.
+--- MOD_DESCRIPTION: ----- In Stars and Time themed Content Mod!! ----- In Stars and Time created by Insertdisc5, Music by Studio Thumpy Puppy, Art assets primarily lifted from ISAT's assets. Features spoiler content from ISAT, as late as ACT 6. You are warned. Play In Stars and Time. Also, Pixel Art Smoothing is reccomended to be ON!
 --- PREFIX: isat
 --- BADGE_COLOUR: 3A3A3A
 --- PRIORITY: 0
---- VERSION: 1.0.3
+--- VERSION: 1.1.0
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
-ISAT = SMODS.current_mod
+-- resets config
+-- SMODS.current_mod.config = {}
 
--- loads jokers
+ISAT = SMODS.current_mod
+isat_dir = ''..SMODS.current_mod.path
+isat_config = SMODS.current_mod.config
+
+assert(SMODS.load_file('config_ui.lua'))()
+
+-- loads objects
 assert(SMODS.load_file('util/jokers/family.lua'))()
+assert(SMODS.load_file('util/jokers/floor1.lua'))()
+assert(SMODS.load_file('util/jokers/floor2.lua'))()
+assert(SMODS.load_file('util/jokers/floor3.lua'))()
 assert(SMODS.load_file('util/jokers/loop.lua'))()
 assert(SMODS.load_file('util/jokers/npcs.lua'))()
 assert(SMODS.load_file('util/consumables.lua'))()
 assert(SMODS.load_file('util/deck.lua'))()
 assert(SMODS.load_file('util/vouchers.lua'))()
+assert(SMODS.load_file('util/deckskins.lua'))()
+assert(SMODS.load_file('util/notifications.lua'))()
+
+SMODS.Language {
+  key = 'suitnames_en',
+  label = 'ISAT EN',
+  loc_key = 'en-us'
+}
 
 SMODS.Atlas { -- modicon
   key = 'modicon',
@@ -142,7 +160,7 @@ if SMODS and SMODS.calculate_individual_effect then
 
     if (key == 'submult' or key == 'esub_ult' or key == 'submult_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
-      mult = mod_mult(mult-amount)
+      mult = mod_mult(math.max(mult-amount,1))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
       if not effect.remove_default_message then
           if from_edition then
@@ -163,6 +181,80 @@ if SMODS and SMODS.calculate_individual_effect then
                       'divmult_mod', 'submult_mod'}) do
     table.insert(SMODS.calculation_keys, v)
   end
+end
+
+--Changes main menu colors and stuff
+if isat_config.menu then
+  SMODS.Atlas {
+    key = "splash",
+    path = "splash.png",
+    px = 333,
+    py = 216,
+    atlas_table = "ASSET_ATLAS"
+  }
+  local oldfunc = Game.main_menu
+  Game.main_menu = function(change_context)
+    local ret = oldfunc(change_context)
+    -- adds frin to the main menu
+    local newcard = Card(
+      G.title_top.T.x,
+      G.title_top.T.y,
+      G.CARD_W,
+      G.CARD_H,
+      G.P_CARDS.empty,
+      G.P_CENTERS.j_isat_siffrin,
+      { bypass_discovery_center = true }
+    )
+    -- recenter the title
+    G.title_top.T.w = G.title_top.T.w * 1.7675
+    G.title_top.T.x = G.title_top.T.x - 0.8
+    G.title_top:emplace(newcard)
+    -- make the card look the same way as the title screen Ace of Spades
+    newcard.T.w = newcard.T.w * 1.1 * 1.2
+    newcard.T.h = newcard.T.h * 1.1 * 1.2
+    newcard.no_ui = true
+    newcard.states.visible = true
+
+    -- make the title screen use different background colors
+    G.SPLASH_BACK:define_draw_steps({
+      {
+        shader = "splash",
+        send = {
+          { name = "time", ref_table = G.TIMERS, ref_value = "REAL_SHADER" },
+          { name = "vort_speed", val = 0.4 },
+          { name = "colour_1", ref_table = G.C, ref_value = "MONOBLUE" },
+          { name = "colour_2", ref_table = G.C, ref_value = "MONORED" },
+        },
+      },
+    })
+
+    G.E_MANAGER:add_event(Event({
+      trigger = "after",
+      delay = 0,
+      blockable = false,
+      blocking = false,
+      func = function()
+        if change_context == "splash" then
+          newcard.states.visible = true
+          newcard:start_materialize({ G.C.WHITE, G.C.WHITE }, true, 2.5)
+        else
+          newcard.states.visible = true
+          newcard:start_materialize({ G.C.WHITE, G.C.WHITE }, nil, 1.2)
+        end
+        ISAT.notification_overlay("start")
+        return true
+      end,
+    }))
+    return ret
+  end
+else
+  SMODS.Atlas {
+    key = "splash",
+    path = "balatro.png",
+    px = 333,
+    py = 216,
+    atlas_table = "ASSET_ATLAS"
+  }
 end
 
 function isat_tooltip(_c, info_queue, card, desc_nodes, specific_vars, full_UI_table)
@@ -186,6 +278,62 @@ function info_tip_from_rows(desc_nodes, name)
         return itfr(desc_nodes, name)
     end
 end
+
+-- dev
+-- SMODS.Consumable{
+--   key = "devstick",
+--   set = 'Spectral',
+--   loc_txt = {
+--     name = 'Dev Stick',
+-- 	  text = {
+--       'ante to 7',
+--     }
+--   },
+--   unlocked = true,
+--   discovered = true,
+--   atlas = 'Jokers',
+--   pos = { x = 3, y = 1 },
+-- 	cost = 999,
+--   can_use = function(self, card)
+--     return true
+--   end,
+--   use = function(self, card, area, copier)
+--     G.GAME.round_resets.blind_ante = 8
+--     G.GAME.round_resets.ante = 8
+--     G.E_MANAGER:add_event(Event({
+--       trigger = 'immediate',
+--       func = function()
+--         G.hand_text_area.ante.config.object:update()
+--         return true
+--       end
+--     }))
+--     for i = 1, #G.jokers.cards do
+--       if G.jokers.cards[i].config.center.key == 'j_isat_siffrin' then
+--         G.E_MANAGER:add_event(Event({
+--           func = function()
+--             G.jokers.cards[i].ability.mult = 100
+--             G.jokers.cards[i].ability.mult_bonus = 1
+--             G.jokers.cards[i].ability.extra.phase = 2
+--             G.jokers.cards[i].ability.extra.pos_override.x = 2
+--             G.jokers.cards[i].children.center:set_sprite_pos(G.jokers.cards[i].ability.extra.pos_override)
+--             return true
+--           end
+--         }))
+--         G.E_MANAGER:add_event(Event({
+--           func = function()
+--             trigger = 'after'
+--             local delay = 1.6
+--             play_sound('isat_shift',1,0.15)
+--             if not extra or not extra.no_juice then
+--               G.jokers.cards[i]:juice_up(0.6, 0.1)
+--             end
+--             return true
+--           end
+--         }))
+--       end
+--     end
+-- 	end,
+-- }
 
 -- Sleeves Patch
 if (SMODS.Mods['CardSleeves'] or {}).can_load then

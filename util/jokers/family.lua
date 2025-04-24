@@ -17,7 +17,6 @@ SMODS.Joker{
   blueprint_compat = true,
   perishable_compat = false, 
   eternal_compat = true,
-  order = 151,
   atlas = 'Jokers',
   pos = {x = 0, y = 0},
   config = {mult = 0, mult_bonus = 3,xmult1 = 1.5, xmult2 = 2.5, extra = {loop = true, loopcount = 0, shift = false,phase = 0,targetphase = 0,antephases = {3,7,8},pos_override={x = 0, y = 0}}},
@@ -83,6 +82,7 @@ SMODS.Joker{
       end
     if context.game_over and card.ability.extra.loop and not context.blueprint then
       unlock_card(G.P_CENTERS["j_isat_loop"])
+      if G.GAME.round_resets.ante == 8 then unlock_card(G.P_CENTERS["j_isat_mal"]) end
       card.ability.extra.shift = false
       card.ability.extra.targetphase = 0
       card.ability.mult = card.ability.mult + card.ability.mult_bonus
@@ -236,7 +236,6 @@ SMODS.Joker{
   blueprint_compat = false,
   perishable_compat = true, 
   eternal_compat = true,
-  order = 152,
   atlas = 'Jokers',
   pos = {x = 4, y = 0},
   config = {extra = {}},
@@ -282,7 +281,6 @@ SMODS.Joker{
   blueprint_compat = true,
   perishable_compat = true, 
   eternal_compat = true,
-  order = 153,
   atlas = 'Jokers',
   pos = {x = 5, y = 0},
   config = {Xmult = 1, Xmult_bonus = 0.4, extra = {}},
@@ -329,7 +327,6 @@ SMODS.Joker{
   blueprint_compat = true,
   perishable_compat = true, 
   eternal_compat = true,
-  order = 154,
   atlas = 'Jokers',
   pos = {x = 6, y = 0},
   config = {extra = 25},
@@ -370,7 +367,6 @@ SMODS.Joker{
   blueprint_compat = true,
   perishable_compat = true, 
   eternal_compat = true,
-  order = 155,
   atlas = 'Jokers',
   pos = {x = 7, y = 0},
   config = {extra = {}},
