@@ -11,9 +11,6 @@
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
--- resets config
--- SMODS.current_mod.config = {}
-
 ISAT = SMODS.current_mod
 isat_dir = ''..SMODS.current_mod.path
 isat_config = SMODS.current_mod.config
@@ -278,62 +275,6 @@ function info_tip_from_rows(desc_nodes, name)
         return itfr(desc_nodes, name)
     end
 end
-
--- dev
--- SMODS.Consumable{
---   key = "devstick",
---   set = 'Spectral',
---   loc_txt = {
---     name = 'Dev Stick',
--- 	  text = {
---       'ante to 7',
---     }
---   },
---   unlocked = true,
---   discovered = true,
---   atlas = 'Jokers',
---   pos = { x = 3, y = 1 },
--- 	cost = 999,
---   can_use = function(self, card)
---     return true
---   end,
---   use = function(self, card, area, copier)
---     G.GAME.round_resets.blind_ante = 8
---     G.GAME.round_resets.ante = 8
---     G.E_MANAGER:add_event(Event({
---       trigger = 'immediate',
---       func = function()
---         G.hand_text_area.ante.config.object:update()
---         return true
---       end
---     }))
---     for i = 1, #G.jokers.cards do
---       if G.jokers.cards[i].config.center.key == 'j_isat_siffrin' then
---         G.E_MANAGER:add_event(Event({
---           func = function()
---             G.jokers.cards[i].ability.mult = 100
---             G.jokers.cards[i].ability.mult_bonus = 1
---             G.jokers.cards[i].ability.extra.phase = 2
---             G.jokers.cards[i].ability.extra.pos_override.x = 2
---             G.jokers.cards[i].children.center:set_sprite_pos(G.jokers.cards[i].ability.extra.pos_override)
---             return true
---           end
---         }))
---         G.E_MANAGER:add_event(Event({
---           func = function()
---             trigger = 'after'
---             local delay = 1.6
---             play_sound('isat_shift',1,0.15)
---             if not extra or not extra.no_juice then
---               G.jokers.cards[i]:juice_up(0.6, 0.1)
---             end
---             return true
---           end
---         }))
---       end
---     end
--- 	end,
--- }
 
 -- Sleeves Patch
 if (SMODS.Mods['CardSleeves'] or {}).can_load then
