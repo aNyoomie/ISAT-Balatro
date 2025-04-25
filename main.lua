@@ -5,8 +5,8 @@
 --- MOD_DESCRIPTION: ----- In Stars and Time themed Content Mod!! ----- In Stars and Time created by Insertdisc5, Music by Studio Thumpy Puppy, Art assets primarily lifted from ISAT's assets. Features spoiler content from ISAT, as late as ACT 6. You are warned. Play In Stars and Time. Also, Pixel Art Smoothing is reccomended to be ON!
 --- PREFIX: isat
 --- BADGE_COLOUR: 3A3A3A
---- PRIORITY: 0
---- VERSION: 1.1.0
+--- PRIORITY: 1
+--- VERSION: 1.1.1
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
