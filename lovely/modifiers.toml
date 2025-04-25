@@ -12,7 +12,7 @@ if v.boss.showdown then
 '''
 position = "at"
 payload = '''
-if v.boss.showdown and G.GAME.round_resets.blind_choices.Boss == "bl_isat_loop_bossblind" then
+if v.boss and v.boss.showdown and G.GAME.round_resets.blind_choices.Boss == "bl_isat_loop_bossblind" then
 	-- ease_background_colour{new_colour = lighten(G.C.WHITE,0.4), special_colour = mix_colours(G.C.WHITE, G.C.BLACK,0.5), tertiary_colour = darken(G.C.BLACK, 0.4), contrast = 5}
     return
 elseif v.boss.showdown then 
