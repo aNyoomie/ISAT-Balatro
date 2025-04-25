@@ -20,7 +20,7 @@ Includes:
 
 2 Vouchers
 
-1 Deck (and Sleeve if Sleeves Mod is enabled)
+1 Deck (and Sleeve if Sleeves Mod is enabled: https://github.com/larswijn/CardSleeves)
 
 and a secret...?
 
