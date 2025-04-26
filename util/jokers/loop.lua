@@ -414,7 +414,9 @@ SMODS.Blind{
     if G.jokers.cards[loop_pos].ability.extra and G.jokers.cards[loop_pos].ability.extra.phase == 2 then 
       ease_background_colour{new_colour = lighten(G.C.WHITE,0.4), special_colour = G.C.RED, tertiary_colour = darken(G.C.BLACK, 0.4), contrast = 5}
     end
-    if G.GAME.chips > self.config.extra.blind_clears[self.config.extra.phase+1] then
+    local chipscore = G.GAME.chips
+    if (SMODS.Mods['Talisman'] or {}).can_load then chipscore = to_big(G.GAME.chips) end
+    if chipscore > self.config.extra.blind_clears[self.config.extra.phase+1] then
       self.config.extra.phase = self.config.extra.phase+1
       G.jokers.cards[loop_pos].ability.extra.targetphase = self.config.extra.phase
       G.jokers.cards[loop_pos]:calculate_joker({phase_change = true})
