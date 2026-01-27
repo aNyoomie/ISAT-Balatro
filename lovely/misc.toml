@@ -84,7 +84,7 @@ if flush_calc then
 '''
 position = 'after'
 payload = '''
-    if next(find_joker('j_isat_tourment')) and (self.ability.effect == 'Stone Card' or self.ability.effect == "Mult Card") and not self.debuff then
+    if next(find_joker('j_isat_tourment')) and (self.ability.effect == 'Stone Card' or self.ability.effect == "Bonus Card") and not self.debuff then
         return true
     end
 '''
@@ -99,7 +99,7 @@ pattern = '''
 '''
 position = 'after'
 payload = '''
-if next(find_joker('j_isat_tourment')) and (self.ability.effect == 'Stone Card' or self.ability.effect == "Mult Card") then
+if next(find_joker('j_isat_tourment')) and (self.ability.effect == 'Stone Card' or self.ability.effect == "Bonus Card") then
     return true
 end
 '''

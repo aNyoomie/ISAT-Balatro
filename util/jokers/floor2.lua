@@ -78,11 +78,11 @@ SMODS.Joker{
 	  text = {
       'When a {C:attention}Glass Card{}',
       'is destroyed in play,',
-      'an {C:attention}Enhancementless{}',
-      'copy is added to deck'
+      'a copy with a random',
+      '{C:attention}Enhancement{} is added to deck'
     },
   },
-  rarity = 1,
+  rarity = 2,
   cost = 4,
   unlocked = true,
   discovered = false,
@@ -97,7 +97,12 @@ SMODS.Joker{
       for k, val in ipairs(context.removed) do
         if val.shattered then
           local _card = copy_card(val, nil, nil, G.playing_card)
-          _card:set_ability(G.P_CENTERS.c_base)
+          local cen_pool = {}
+          for _, v in pairs(G.P_CENTER_POOLS["Enhanced"]) do
+            cen_pool[#cen_pool + 1] = v
+          end
+          local enhancement = pseudorandom_element(cen_pool, pseudoseed('angoisse'))
+          _card:set_ability(enhancement, nil, true)
           _card:add_to_deck()
           _card.states.visible = nil
           table.insert(card.ability.extra.cards,_card)
@@ -235,7 +240,7 @@ SMODS.Joker{
     name = 'Accablement & Abattement',
 	  text = {
       'Randomly {C:attention}Debuffs{}',
-      'a scoring card,',
+      'a played card,',
       '{X:mult,C:white}X#1#{} Mult'
     },
   },

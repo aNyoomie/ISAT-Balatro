@@ -77,7 +77,7 @@ SMODS.Joker{
   loc_txt = {
     name = 'Tourment',
 	  text = {
-      '{C:attention}Stone{} and {C:attention}Mult{} cards',
+      '{C:attention}Stone{} and {C:attention}Bonus{} cards',
       'count as {C:attention}Wild{} cards'
     },
   },
@@ -159,10 +159,8 @@ SMODS.Joker{
   loc_txt = {
     name = 'Désespoir',
 	  text = {
-      'Played cards have a recounting{C:attention}*',
-      '{C:chips}X{C:green} in #1#{} chance to give {C:money}$#2#{},',
-      '{C:chips}X{}: Chips scored by card',
-      '{C:attention}*{C:inactive}rolls again with excess Chips'
+      'Played cards give {C:money}$#2#{}',
+      'for every {C:chips}#1#{} Chips they score'
     },
   },
   rarity = 2,
@@ -174,9 +172,9 @@ SMODS.Joker{
   eternal_compat = true,
   atlas = 'Jokers',
   pos = {x = 4, y = 4},
-  config = {extra = {odds = 10, money = 1}},
+  config = {extra = {per = 10, money = 1}},
   loc_vars = function(self,info_queue,card)
-    return {vars = {card.ability.extra.odds, card.ability.extra.money}}
+    return {vars = {card.ability.extra.per, card.ability.extra.money}}
   end,
   calculate = function(self,card,context)
     if context.individual and context.cardarea == G.play and not context.end_of_round then
@@ -188,12 +186,7 @@ SMODS.Joker{
       if _card.edition then
         total_chips = total_chips + (_card.edition.chips or 0)
       end
-      local money = 0
-      while total_chips >= card.ability.extra.odds do
-        money = money+1
-        total_chips = total_chips - card.ability.extra.odds
-      end
-      if (pseudorandom('desespoir') < total_chips/card.ability.extra.odds) then money = money+1 end
+      local money = math.floor(total_chips/card.ability.extra.per)
       if money > 0 then
         return {
           dollars = card.ability.extra.money*money,
@@ -212,7 +205,7 @@ SMODS.Joker{
 	  text = {
       '{C:chips}+#1#{} Chips if played',
       'hand contains cards',
-      'of {C:attention}3{} different suits',
+      'of {C:attention}3{} different Suits',
     },
   },
   rarity = 2,
@@ -224,7 +217,7 @@ SMODS.Joker{
   eternal_compat = true,
   atlas = 'Jokers',
   pos = {x = 6, y = 4},
-  config = {extra = {chips = 200}},
+  config = {extra = {chips = 150}},
   loc_vars = function(self,info_queue,card)
     return {vars = {card.ability.extra.chips}}
   end,

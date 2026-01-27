@@ -54,7 +54,7 @@ SMODS.Joker{
           func = function()
             G.E_MANAGER:add_event(Event({
               func = function()
-                G.jokers.cards[1].ability.mult_bonus = 3
+                G.jokers.cards[1].ability.mult_bonus = 2
                 G.jokers.cards[1].ability.extra.phase = 3
                 G.jokers.cards[1].ability.extra.pos_override.x = 3
                 G.jokers.cards[1].children.center:set_sprite_pos(G.jokers.cards[1].ability.extra.pos_override)

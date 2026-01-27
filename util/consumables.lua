@@ -24,6 +24,28 @@ SMODS.ConsumableType{
 	default = "c_isat_pineapple"
 }
 
+-- -- debug
+-- SMODS.Consumable{
+--     key = "debug",
+--     set = 'snack',
+--     loc_txt = {
+--         name = '8',
+--         text = {'ante 8'
+--         }
+--     },
+--     unlocked = true,
+--     atlas = 'snacks',
+--     pos = { x = 0, y = 0 },
+--     cost = 3,
+--     effect = "Enhance",
+--     can_use = function(self, card)
+--         return true
+--     end,
+--     use = function(self, card, area, copier)
+--         G.GAME.round_resets.ante = 8
+--     end,
+-- }
+
 -- plantain
 SMODS.Consumable{
     key = "plantain",
@@ -612,7 +634,6 @@ SMODS.Consumable{
     effect = "Enhance",
     config = {extra = 40},
     loc_vars = function(self,info_queue,center)
-        info_queue[#info_queue + 1] = {generate_ui = isat_tooltip, key = 'fritters', title = "Favourite!"}
         return {vars = {center.ability.extra}}
     end,
     set_ability = function(self, card, initial, delay_sprites)
@@ -624,15 +645,6 @@ SMODS.Consumable{
 		return #G.jokers.highlighted == 1
     end,
     use = function(self, card, area, copier)
-        if G.jokers.highlighted[1].ability.name == "j_isat_siffrin" then 
-            G.jokers.highlighted[1].ability.xmult1 = G.jokers.highlighted[1].ability.xmult1+0.1
-            G.jokers.highlighted[1].ability.xmult2 = G.jokers.highlighted[1].ability.xmult2+0.1
-            G.jokers.highlighted[1]:juice_up()
-            if G.jokers.highlighted[1].ability.extra.phase > 0 then
-                card_eval_status_text(G.jokers.highlighted[1], 'extra', nil, nil, nil, {colour = G.C.RED, message = localize{ type = 'variable', key = 'a_xmult', 
-                vars = { (G.jokers.highlighted[1].ability.extra.phase == 2 and G.jokers.highlighted[1].ability.xmult2) or G.jokers.highlighted[1].ability.xmult1 } } })  
-            end
-        end
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
             play_sound('timpani')
             card:juice_up(0.3, 0.5)

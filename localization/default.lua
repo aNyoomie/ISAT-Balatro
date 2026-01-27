@@ -33,13 +33,6 @@ return {
 					'will {C:green}always{} be {C:attention}destroyed{}.'
 				},
 			},
-			['fritters'] = {
-				["text"] = {
-					"{C:inactive}Hmfyurghm.",
-					'If used on {C:snack}Siffrin{}, their',
-					'{X:mult,C:white}xMult{} will gain {X:mult,C:white}X0.1{}'
-				},
-			},
         },
 		Sleeve = {
 			sleeve_isat_star = {

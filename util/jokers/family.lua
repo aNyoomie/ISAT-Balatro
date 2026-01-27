@@ -10,8 +10,8 @@ SMODS.Joker{
 	    "{E:1,C:inactive}It's you!",
     },
   },
-  rarity = 2,
-  cost = 6,
+  rarity = 3,
+  cost = 7,
   unlocked = true,
   discovered = true,
   blueprint_compat = true,
@@ -19,7 +19,7 @@ SMODS.Joker{
   eternal_compat = true,
   atlas = 'Jokers',
   pos = {x = 0, y = 0},
-  config = {mult = 0, mult_bonus = 3,xmult1 = 1.5, xmult2 = 2.5, extra = {loop = true, loopcount = 0, shift = false,phase = 0,targetphase = 0,antephases = {3,7,8},pos_override={x = 0, y = 0}}},
+  config = {mult = 0, mult_bonus = 2,xmult1 = 1.5, xmult2 = 2.5, extra = {loop = true, loopcount = 0, shift = false,phase = 0,targetphase = 0,antephases = {3,7,8},pos_override={x = 0, y = 0}}},
 	process_loc_text = function(self)
 		SMODS.process_loc_text(G.localization.descriptions[self.set], self.key, self.loc_txt)
 		SMODS.process_loc_text(G.localization.descriptions[self.set], "siffrin2", {
@@ -35,9 +35,7 @@ SMODS.Joker{
     SMODS.process_loc_text(G.localization.descriptions[self.set], "siffrin3", {
 			name = 'Siffrin',
       text = {
-        '{C:red}+#2#{} Mult at end of round',
-        'or when {C:attention}Blind{} is skipped',
-        '{C:inactive}(Currently {C:red}+#1#{} {C:inactive}Mult)',
+        '{C:red}+#1#{} Mult',
         '{X:mult,C:white}X#3#{} Mult',
         "{C:inactive}(Finish it.)",
       },
@@ -114,7 +112,8 @@ SMODS.Joker{
       if G.GAME.blind:get_type() == 'Boss' and card.ability.extra.phase < 3 then card.ability.extra.loop = true
       elseif card.ability.extra.phase == 3 and card.ability.extra.loop then card.ability.extra.loop = false end
       card.ability.mult = card.ability.mult + card.ability.mult_bonus
-      card_eval_status_text(card, 'extra', nil, nil, nil, {colour = G.C.RED, message = localize{ type = 'variable', key = 'a_mult', vars = { card.ability.mult } } })   
+      if card.ability.extra.phase ~= 2 then 
+        card_eval_status_text(card, 'extra', nil, nil, nil, {colour = G.C.RED, message = localize{ type = 'variable', key = 'a_mult', vars = { card.ability.mult } } }) end
     end
     -- handles card art shift
     if context.isat_cash_out and card.ability.extra.shift and not context.blueprint then
@@ -124,7 +123,7 @@ SMODS.Joker{
           func = function()
             G.E_MANAGER:add_event(Event({
               func = function()
-                card.ability.mult_bonus = (card.ability.extra.targetphase == 3 and 3) or 3 - card.ability.extra.targetphase
+                card.ability.mult_bonus = (card.ability.extra.targetphase == 3 and 2) or 2 - card.ability.extra.targetphase
                 card.ability.extra.phase = card.ability.extra.targetphase
                 card.ability.extra.pos_override.x = card.ability.extra.phase
                 card.children.center:set_sprite_pos(card.ability.extra.pos_override)
@@ -165,13 +164,13 @@ SMODS.Joker{
       elseif card.ability.extra.phase == 1 and G.GAME.used_vouchers.v_petroglyph then
         card.ability.extra.targetphase = 2
       end
-      if card.ability.extra.phase < card.ability.extra.targetphase then
+      if (card.ability.extra.phase == 0 and G.GAME.used_vouchers.v_hieroglyph) or (card.ability.extra.phase == 1 and G.GAME.used_vouchers.v_petroglyph) then
         return {
           G.E_MANAGER:add_event(Event({
             func = function()
               G.E_MANAGER:add_event(Event({
                 func = function()
-                  card.ability.mult_bonus = (card.ability.extra.targetphase == 3 and 3) or 3 - card.ability.extra.targetphase
+                  card.ability.mult_bonus = (card.ability.extra.targetphase == 3 and 2) or 3 - card.ability.extra.targetphase
                   card.ability.extra.phase = card.ability.extra.targetphase
                   card.ability.extra.pos_override.x = card.ability.extra.phase
                   card.children.center:set_sprite_pos(card.ability.extra.pos_override)
@@ -317,11 +316,12 @@ SMODS.Joker{
 	  text = {
       'Reduces Blind',
       'Requirement by {C:attention}#1#%',
+      'when playing a {C:blue}Hand',
 	    '{E:1,C:inactive}The Researcher!'
     },
   },
   rarity = 2,
-  cost = 5,
+  cost = 6,
   unlocked = true,
   discovered = true,
   blueprint_compat = true,
@@ -334,14 +334,14 @@ SMODS.Joker{
     return {vars = {card.ability.extra}}
   end,
   calculate = function(self,card,context)
-    if context.first_hand_drawn then 
+    if context.before then 
+      card_eval_status_text(card, 'extra', nil, nil, nil,
+                        { message = "Blind Lowered!", colour = G.C.GREY })
       G.E_MANAGER:add_event(Event({
         func = function()
-          G.GAME.blind.chips = G.GAME.blind.chips*0.01*(100-card.ability.extra)
+          G.GAME.blind.chips = math.floor(G.GAME.blind.chips*0.01*(100-card.ability.extra))
           G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
           G.hand_text_area.blind_chips:juice_up()
-          card_eval_status_text(card, 'extra', nil, nil, nil,
-                        { message = "Blind Lowered!", colour = G.C.GREY, delay = 1 })
           return true
         end
       })) 

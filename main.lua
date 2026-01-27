@@ -29,6 +29,7 @@ assert(SMODS.load_file('util/deck.lua'))()
 assert(SMODS.load_file('util/vouchers.lua'))()
 assert(SMODS.load_file('util/deckskins.lua'))()
 assert(SMODS.load_file('util/notifications.lua'))()
+assert(SMODS.load_file('compatibility/JokerDisplay.lua'))()
 
 SMODS.Language {
   key = 'suitnames_en',
@@ -139,35 +140,45 @@ if SMODS and SMODS.calculate_individual_effect then
     end
     if (key == 'div_mult' or key == 'divmult' or key == 'divmult_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
+      if SMODS.Scoring_Parameters then
+        local mult = SMODS.Scoring_Parameters["mult"]
+        mult:modify((1/amount))
+      else
+        mult = mod_mult(mult * (1/amount))
+        update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
+      end
       mult = mod_mult(mult * (1/amount))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
       if not effect.remove_default_message then
-          if from_edition then
-              card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = "÷"..amount.." Mult", colour =  G.C.EDITION, edition = true})
-          elseif key ~= 'divmult_mod' then
-              if effect.divmult_message then
-                  card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, {message = "÷"..amount.." Mult", colour =  G.C.L_BLACK, edition = false})
-              else
-                  card_eval_status_text(scored_card or effect.card or effect.focus, 'divmult', amount, percent, nil, {message = "÷"..amount.." Mult", colour =  G.C.L_BLACK, edition = false})
-              end
+          if key ~= 'divmult_mod' then
+            if effect.divmult_message then
+              card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, {message = "÷"..amount.." Mult", colour =  G.C.L_BLACK, edition = false})
+            else
+              card_eval_status_text(scored_card or effect.card or effect.focus, 'divmult', amount, percent, nil, {message = "÷"..amount.." Mult", colour =  G.C.L_BLACK, edition = false})
+            end
           end
       end
       return true
     end
 
-    if (key == 'submult' or key == 'esub_ult' or key == 'submult_mod') and amount ~= 1 then 
+    if (key == 'submult' or key == 'sub_mult' or key == 'submult_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
+      if SMODS.Scoring_Parameters then
+        local mult = SMODS.Scoring_Parameters["mult"]
+        mult:modify(math.max(0 - amount,0))
+      else
+        mult = mod_mult(math.max(mult-amount,1))
+        update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
+      end
       mult = mod_mult(math.max(mult-amount,1))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
       if not effect.remove_default_message then
-          if from_edition then
-              card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = "-"..amount.." Mult", colour =  G.C.BLACK, edition = true})
-          elseif key ~= 'submult_mod' then
-              if effect.submult_message then
-                  card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, {message = "-" ..amount.." Mult", colour =  G.C.BLACK, edition = false})
-              else
-                  card_eval_status_text(scored_card or effect.card or effect.focus, 'submult', amount, percent, nil, {message = "-" ..amount.." Mult", colour =  G.C.BLACK, edition = false})
-              end
+          if key ~= 'submult_mod' then
+            if effect.submult_message then
+              card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, {message = "-" ..amount.." Mult", colour =  G.C.BLACK, edition = false})
+            else
+              card_eval_status_text(scored_card or effect.card or effect.focus, 'submult', amount, percent, nil, {message = "-" ..amount.." Mult", colour =  G.C.BLACK, edition = false})
+            end
           end
       end
       return true
@@ -176,7 +187,7 @@ if SMODS and SMODS.calculate_individual_effect then
   for _, v in ipairs({'divmult', 'submult',
                       'div_mult', 'sub_mult',
                       'divmult_mod', 'submult_mod'}) do
-    table.insert(SMODS.calculation_keys, v)
+    table.insert(SMODS.scoring_parameter_keys or SMODS.calculation_keys, v)
   end
 end
 

@@ -57,9 +57,9 @@ SMODS.Joker{
   eternal_compat = true,
   atlas = 'Jokers',
   pos = {x = 7, y = 1},
-  config = {extra = {1.5}},
+  config = {extra = 1.5},
   loc_vars = function(self,info_queue,card)
-    return {vars = {card.ability.extra[1]}}
+    return {vars = {card.ability.extra}}
   end,
   calculate = function(self,card,context)
     if context.cardarea == G.hand and context.individual and not context.end_of_round then
@@ -74,7 +74,7 @@ SMODS.Joker{
         }
       else
         return {
-            x_mult = card.ability.extra[1],
+            x_mult = card.ability.extra,
             card = card
         }
       end
@@ -140,12 +140,12 @@ SMODS.Joker{
   eternal_compat = false,
   atlas = 'Jokers',
   pos = {x = 5, y = 4},
-  config = {extra = {rounds = 2, counter = 0}},
+  config = {extra = {rounds = 3, counter = 0}},
   loc_vars = function(self,info_queue,card)
     return {vars = {card.ability.extra.rounds, card.ability.extra.counter}}
   end,
   calculate = function(self,card,context)
-    if ((not context.repetition and not context.individual and context.end_of_round) or context.skip_blind) and not context.blueprint then
+    if (not context.repetition and not context.individual and context.end_of_round) and not context.blueprint then
       card.ability.extra.counter = card.ability.extra.counter + 1
       if card.ability.extra.counter == card.ability.extra.rounds then
         local eval = function(card) return not card.REMOVED end

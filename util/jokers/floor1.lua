@@ -168,14 +168,14 @@ SMODS.Joker{
   eternal_compat = true,
   atlas = 'Jokers',
   pos = {x = 4, y = 2},
-  config = {submult = 4, chips = 150},
+  config = {chips = 150,extra = {submult = 4}},
   loc_vars = function(self,info_queue,card)
-    return {vars = {card.ability.submult,card.ability.chips}}
+    return {vars = {card.ability.extra.submult,card.ability.chips}}
   end,
   calculate = function(self,card,context)
     if context.joker_main then
       return { 
-        submult = card.ability.submult,
+        submult = card.ability.extra.submult,
 				chips = card.ability.chips
       }
     end
@@ -208,8 +208,9 @@ SMODS.Joker{
     return {vars = {card.ability.extra.Xmult, localize(G.GAME.current_round.calamite_card.suit, 'suits_singular'), colours = {G.C.SUITS[G.GAME.current_round.calamite_card.suit]}}}
   end,
   calculate = function(self,card,context)
-    if context.individual and context.cardarea == G.play then
+    if context.before then
       card.ability.extra.found = nil
+    elseif context.individual and context.cardarea == G.play then
       if context.other_card:is_suit(G.GAME.current_round.calamite_card.suit) then
         card.ability.extra.found = true
       end
